@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050b0b">
+<title>NOVA AI</title>
+<style>
+:root{--bg:#050909;--panel:#0b1415;--line:#203536;--cyan:#36f2d0;--green:#76ff9b;--muted:#91aaa8;--text:#eaf8f5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 30%,#092321 0,#050909 48%,#030606 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+.app{max-width:540px;margin:auto;min-height:100vh;display:flex;flex-direction:column;padding:14px 14px 88px}
+header{display:flex;align-items:center;justify-content:space-between;padding:8px 2px}
+.brand{display:flex;gap:10px;align-items:center}.logo{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1px solid #45e8d5;background:#082d2c;box-shadow:0 0 20px #0bd9bd66;font-size:20px}
+h1{font-size:20px;letter-spacing:2px;margin:0}small{color:var(--muted)}.badge{font-size:11px;border:1px solid #27685e;padding:5px 9px;border-radius:20px;color:var(--green)}
+.hero{text-align:center;padding:18px 0 8px}
+.orb-wrap{height:220px;display:grid;place-items:center;position:relative}
+.orb{width:158px;height:158px;border-radius:50%;position:relative;background:radial-gradient(circle at 50% 50%,#d8fff9 0,#5affd6 5%,#19c9ba 20%,#086b65 45%,#032d30 68%,#021315 100%);box-shadow:0 0 22px #14e6c8,0 0 65px #08bda577, inset 0 0 24px #73ffe8;animation:pulse 3s ease-in-out infinite}
+.orb:before,.orb:after{content:"";position:absolute;inset:-18px;border:1px solid #2beed0aa;border-radius:50%;animation:spin 8s linear infinite}.orb:after{inset:-30px;border-color:#31c6b577;animation-direction:reverse;animation-duration:12s}
+.orb .core{position:absolute;inset:30px;border-radius:50%;background:radial-gradient(circle,#a6fff4aa,transparent 70%);filter:blur(6px)}
+@keyframes pulse{50%{transform:scale(1.06);filter:hue-rotate(12deg)}}@keyframes spin{to{transform:rotate(360deg)}}
+.status{font-size:12px;color:var(--green);letter-spacing:1.5px}.tagline{color:var(--muted);font-size:13px;margin-top:5px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 16px}
+.quick button,.menu button{border:1px solid var(--line);background:#0b1718;color:var(--text);border-radius:14px;padding:12px 6px;font-size:12px;cursor:pointer}
+.quick button:active,.menu button:active{border-color:var(--cyan);transform:scale(.98)}.quick span{display:block;font-size:19px;margin-bottom:5px}
+.panel{background:linear-gradient(180deg,#0b1516,#071010);border:1px solid var(--line);border-radius:18px;padding:13px;margin-bottom:12px}
+.panel-title{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#c6e4df;margin-bottom:9px}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:9px}.menu button{text-align:left;padding:12px 13px}.menu b{display:block;margin-bottom:3px}
+#chatbox{display:none;flex-direction:column;gap:10px;margin:8px 0 12px}
+.messages{max-height:42vh;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:2px}
+.msg{max-width:90%;padding:11px 13px;border-radius:15px;white-space:pre-wrap;line-height:1.45;font-size:14px;word-wrap:break-word}.user{align-self:flex-end;background:#124c46;border:1px solid #217e71}.bot{align-self:flex-start;background:#101d1e;border:1px solid #24403f}
+.composer{display:flex;gap:7px}.composer input{min-width:0;flex:1;background:#071011;color:var(--text);border:1px solid #25413f;border-radius:14px;padding:12px;font-size:15px;outline:none}.composer button{border:0;background:#15bca7;color:#001614;border-radius:12px;padding:0 14px;font-weight:700}
+input,button{font-family:inherit}.settings{display:none}.settings input{width:100%;margin:7px 0;background:#071011;border:1px solid #25413f;color:white;padding:11px;border-radius:10px}.settings p{font-size:12px;color:var(--muted);line-height:1.5}.settings button,.secondary{background:#102322;color:var(--text);border:1px solid #28504b;padding:12px 14px;border-radius:12px;cursor:pointer;touch-action:manipulation}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#050909ee;border-top:1px solid #203332;backdrop-filter:blur(10px);display:flex;justify-content:center}.bottomnav{max-width:540px;width:100%;display:flex;justify-content:space-around;padding:9px 8px calc(9px + env(safe-area-inset-bottom))}.bottomnav button{background:none;border:0;color:#8eaaa6;font-size:11px}.bottomnav button.active{color:var(--green)}.bottomnav span{display:block;font-size:18px;margin-bottom:2px}
+footer{text-align:center;color:#526c69;font-size:10px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><div class="logo">✦</div><div><h1>NOVA AI</h1><small>Personal AI Assistant</small></div></div><div class="badge" id="badge">DEMO MODE</div></header>
+<section class="hero" id="home">
+<div class="orb-wrap"><div class="orb"><div class="core"></div></div></div>
+<div class="status">● AI SYSTEM READY</div><div class="tagline">Ask anything. Learn something new.</div>
+<button class="secondary" style="margin-top:10px" onclick="speakLast()">🔊 NOVA-এর শেষ উত্তর শুনুন</button>
+</section>
+<div class="quick">
+<button onclick="quick('Explain a topic simply')"><span>📚</span>Learn</button>
+<button onclick="quick('Help me write something')"><span>✍️</span>Write</button>
+<button onclick="quick('Help me with coding')"><span>💻</span>Code</button>
+<button onclick="startVoice()"><span>🎙️</span>Voice</button>
+</div>
+<section class="panel">
+<div class="panel-title"><span>✧ QUICK ACCESS</span><span>4 modules</span></div>
+<div class="menu">
+<button onclick="showChat()"><b>💬 CHAT</b><small>Ask your AI</small></button>
+<button onclick="showMemory()"><b>🧠 MEMORY</b><small>Saved notes</small></button>
+<button onclick="showHistory()"><b>📜 HISTORY</b><small>Past chats</small></button>
+<button onclick="showSettings()"><b>⚙️ SETTINGS</b><small>Configure</small></button>
+</div>
+</section>
+<section id="chatbox" class="panel">
+<div class="panel-title"><span>💬 CHAT WITH NOVA</span><button class="secondary" onclick="clearChat()">Clear</button></div>
+<div id="messages" class="messages"></div>
+<div class="composer"><input id="prompt" placeholder="Write your question..." onkeydown="if(event.key==='Enter')send()"><button onclick="send()">Send ➤</button></div>
+</section>
+<section id="memory" class="panel" style="display:none">
+<div class="panel-title"><span>🧠 MEMORY</span><button class="secondary" onclick="clearMemory()">Clear</button></div>
+<p style="font-size:13px;color:var(--muted)">Your saved notes stay on this browser/device.</p>
+<textarea id="memInput" placeholder="Write a note for NOVA to remember..." style="width:100%;min-height:80px;background:#071011;color:white;border:1px solid #25413f;border-radius:10px;padding:10px"></textarea>
+<button class="secondary" onclick="saveMemory()">Save note</button><div id="memList"></div>
+</section>
+<section id="voicepanel" class="panel" style="display:none">
+<div class="panel-title"><span>🎙️ NOVA VOICE</span><span>বাংলা</span></div>
+<p style="font-size:13px;color:var(--muted)">AI-এর উত্তর শোনো, অথবা Chat খুলে Keyboard-এর মাইক ব্যবহার করে কথা লিখে নাও।</p>
+<div style="display:grid;gap:10px">
+<button class="secondary" style="padding:16px;font-size:16px" onclick="speakLast()">🔊 AI-এর শেষ উত্তর শোনো</button>
+<button class="secondary" style="padding:16px;font-size:16px" onclick="voiceTest()">🗣️ কথা বলার পরীক্ষা</button>
+<button class="secondary" style="padding:16px;font-size:16px" onclick="stopVoice()">⏹️ Voice বন্ধ করো</button>
+<button class="secondary" style="padding:16px;font-size:16px" onclick="startVoice()">🎙️ Keyboard voice typing ব্যবহার করো</button>
+</div><div id="voiceStatus" style="font-size:12px;color:var(--muted);margin-top:10px"></div>
+</section>
+<section id="history" class="panel" style="display:none">
+<div class="panel-title"><span>📜 HISTORY</span><button class="secondary" onclick="clearChat()">Clear history</button></div><div id="historyList" style="font-size:13px;color:var(--muted)"></div>
+</section>
+<section id="settings" class="panel settings">
+<div class="panel-title"><span>⚙️ SETTINGS</span></div>
+<label style="font-size:13px">AI Connection</label>
+<p>API Key এখন Vercel-এর নিরাপদ server environment-এ থাকবে। এখানে Key paste করবে না।</p>
+<label style="font-size:13px">Model name (optional)</label><input id="model" value="gemini-2.5-flash-lite">
+<button onclick="saveSettings()">Save settings</button>
+<p>Secure Backend mode: browser থেকে API key পাঠানো হয় না। Deploy করার আগে Vercel Environment Variables-এ GEMINI_API_KEY যোগ করতে হবে।</p>
+<a href="https://aistudio.google.com/" target="_blank" style="color:#58e9cf">Open Google AI Studio ↗</a>
+</section>
+<footer>Prototype v1 • Your chats are stored locally on this device</footer>
+</div>
+<div class="bottom"><div class="bottomnav">
+<button class="active" onclick="nav('home',this)"><span>⌂</span>Home</button>
+<button onclick="nav('chatbox',this)"><span>▤</span>Chat</button>
+<button onclick="navVoice(this)"><span>♬</span>Voice</button>
+<button onclick="nav('history',this)"><span>◷</span>History</button>
+<button onclick="nav('settings',this)"><span>⚙</span>Settings</button>
+</div></div>
+<script>
+const $=id=>document.getElementById(id);
+let chat=JSON.parse(localStorage.getItem('nova_chat')||'[]');
+let memories=JSON.parse(localStorage.getItem('nova_mem')||'[]');
+let model=localStorage.getItem('nova_model')||'gemini-2.5-flash-lite';
+$('model').value=model;
+function persist(){localStorage.setItem('nova_chat',JSON.stringify(chat));}
+function nav(id,btn){['chatbox','memory','history','settings','voicepanel'].forEach(x=>$(x).style.display='none');$('home').style.display=id==='home'?'block':'none';if(id!=='home')$(id).style.display='block';document.querySelectorAll('.bottomnav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(id==='history')renderHistory();if(id==='memory')renderMem();}
+function showChat(){nav('chatbox',document.querySelectorAll('.bottomnav button')[1]);$('prompt').focus()}
+function showMemory(){nav('memory',document.querySelectorAll('.bottomnav button')[0]);$('home').style.display='block'}
+function showHistory(){nav('history',document.querySelectorAll('.bottomnav button')[3])}
+function showSettings(){nav('settings',document.querySelectorAll('.bottomnav button')[4])}
+function quick(text){showChat();$('prompt').value=text;$('prompt').focus()}
+function addMsg(role,text){chat.push({role,text,at:new Date().toLocaleString()});persist();renderChat()}
+function renderChat(){const box=$('messages');box.innerHTML='';chat.forEach(m=>{let d=document.createElement('div');d.className='msg '+(m.role==='user'?'user':'bot');d.textContent=m.text;
+if(m.role==='assistant'){let b=document.createElement('button');b.textContent='🔊 উত্তর শুনুন';b.className='secondary';b.style.marginTop='4px';b.onclick=()=>speakText(m.text);let wrap=document.createElement('div');wrap.style.alignSelf='flex-start';wrap.appendChild(d);wrap.appendChild(b);box.appendChild(wrap)}else box.appendChild(d)});box.scrollTop=box.scrollHeight}
+async function send(){let prompt=$('prompt').value.trim();if(!prompt)return;$('prompt').value='';addMsg('user',prompt);let wait=document.createElement('div');wait.className='msg bot';wait.textContent='NOVA is thinking…';$('messages').appendChild(wait);
+try{
+let context=chat.slice(-12).map(m=>({role:m.role==='user'?'user':'assistant',text:m.text}));
+let res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:context,notes:memories.map(m=>m.note),model})});
+let data=await res.json();if(!res.ok)throw new Error(data.error||('HTTP '+res.status));
+let answer=data.answer||'উত্তর পাওয়া যায়নি।';
+wait.textContent=answer;chat.push({role:'assistant',text:answer,at:new Date().toLocaleString()});persist();renderChat();
+}catch(e){wait.textContent='Error: '+e.message+' — Vercel Backend/Environment Variable ঠিক আছে কি না দেখো।'}}
+function clearChat(){if(confirm('Clear all chat history?')){chat=[];persist();renderChat();renderHistory()}}
+function renderHistory(){let h=$('historyList');h.innerHTML=chat.length?chat.map(m=>`<div style="padding:9px;border-bottom:1px solid #1c3231"><b>${m.role==='user'?'You':'NOVA'}</b> · ${m.at}<br>${esc(m.text.slice(0,180))}</div>`).join(''):'No chat history yet.'}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function saveSettings(){model=$('model').value.trim()||'gemini-2.5-flash-lite';localStorage.setItem('nova_model',model);$('badge').textContent='SECURE API';alert('Model settings saved. API Key server-এ রাখবে।')}
+function saveMemory(){let note=$('memInput').value.trim();if(!note)return;memories.push({note,at:new Date().toLocaleString()});localStorage.setItem('nova_mem',JSON.stringify(memories));$('memInput').value='';renderMem()}
+function renderMem(){$('memList').innerHTML=memories.map((m,i)=>`<div style="border-top:1px solid #1c3231;padding:9px">${esc(m.note)} <button class="secondary" onclick="deleteMem(${i})">Delete</button></div>`).join('')||'<small>No saved notes.</small>'}
+function deleteMem(i){memories.splice(i,1);localStorage.setItem('nova_mem',JSON.stringify(memories));renderMem()}
+function clearMemory(){if(confirm('Delete saved notes?')){memories=[];localStorage.setItem('nova_mem','[]');renderMem()}}
+function navVoice(btn){nav('voicepanel',btn)}
+function stopVoice(){if('speechSynthesis' in window)speechSynthesis.cancel();$('voiceStatus').textContent='Voice বন্ধ করা হয়েছে।'}
+function voiceTest(){speakText('আসসালামু আলাইকুম। আমি নোভা এআই। বাংলা কণ্ঠ পরীক্ষা করছি।');$('voiceStatus').textContent='কণ্ঠ পরীক্ষা চলছে…'}
+function speakText(text){
+  if(!('speechSynthesis' in window)){alert('এই ব্রাউজারে Text-to-Speech সমর্থন নেই।');return}
+  speechSynthesis.cancel();
+  const utter=new SpeechSynthesisUtterance(text);
+  utter.lang='bn-BD'; utter.rate=0.92; utter.pitch=1;
+  const voices=speechSynthesis.getVoices();
+  const bn=voices.find(v=>v.lang.toLowerCase().startsWith('bn'));
+  if(bn) utter.voice=bn;
+  speechSynthesis.speak(utter);
+}
+function speakLast(){
+  const last=[...chat].reverse().find(m=>m.role==='assistant');
+  if(last) speakText(last.text); else alert('আগে Chat-এ NOVA-কে একটি প্রশ্ন করো।');
+}
+function startVoice(){
+  showChat();
+  const p=$('prompt');
+  p.focus();
+  $('prompt').placeholder='Gboard-এর 🎙️ মাইকে বলো, তারপর Send চাপো';
+  alert('Chat input খোলা হয়েছে। Keyboard-এর 🎙️ মাইক্রোফোন চাপ দিয়ে কথা বলো। লেখা এলে Send চাপো।');
+}
+
+renderChat();renderMem();$('badge').textContent='SECURE API';
+</script>
+</body>
+</html>
